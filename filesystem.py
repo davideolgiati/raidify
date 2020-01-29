@@ -1,12 +1,14 @@
 import os   # os.path.relpath
 import shutil
-from watchdog.events import FileSystemEventHandler # <--
+from watchdog.events import FileSystemEventHandler  # <--
 
 # la calsse 'MyHandler' serve per gestire gli eventi registrati
 # dalla libreria watchdog.
 # Estende la classe 'FileSystemEventHandler' che è la classe
 # più basilare presnte nella libreria, controlla ogni cambaimento
 # senza filtraggio
+
+
 class MyHandler(FileSystemEventHandler):
     # nel costruttore salvo il valore di path, che rappresnta
     # la directory principale da osservare
@@ -15,41 +17,45 @@ class MyHandler(FileSystemEventHandler):
         self.dest = dest
         self.dryrun = (setup & 2) == 2
         self.verbose = (setup & (1 << 3)) & (1 << 3)
-        if (setup & 4) == 4: # init flag attivo
+        if (setup & 4) == 4:  # init flag attivo
             dirs = []
             files = []
             dirs, files = self.dirWalk(path, dest, dirs, files)
             dirs, files = self.dirWalk(dest, path, dirs, files)
-            if self.verbose : print("\nDIRS to be duplicated: ")
+            if self.verbose:
+                print("\nDIRS to be duplicated: ")
             for dir in dirs:
                 test = os.path.isdir(dir)
                 if not test:
-                    if self.verbose : print("\t" + dir)
+                    if self.verbose:
+                        print("\t" + dir)
                     os.mkdir(dir)
 
-            if self.verbose : print("\nFILES to be duplicated: ")
+            if self.verbose:
+                print("\nFILES to be duplicated: ")
             for dst in files:
                 src = os.path.join(path,
                                    os.path.relpath(dst,
                                                    dest))
                 test = os.path.isfile(dst)
                 if not test:
-                    if self.verbose : print("\t" + dst)
+                    if self.verbose:
+                        print("\t" + dst)
                     shutil.copy2(src, dst)
 
     def dirWalk(self, main, dest, dirs, files):
         for dir_path, dir_names, file_names in os.walk(main):
             for dir in dir_names:
                 new_path = os.path.join(dest, dir)
-                if (not new_path in dirs) and dir != ".":
+                if (new_path not in dirs) and dir != ".":
                     dirs.append(new_path)
             for f in file_names:
                 rel_path = os.path.relpath(dir_path, main)
                 new_path = os.path.join(dest, rel_path)
-                if rel_path == "." :
-                    new_file = os.path.join(dest ,f)
-                else :
-                    new_file = os.path.join(new_path ,f)
+                if rel_path == ".":
+                    new_file = os.path.join(dest, f)
+                else:
+                    new_file = os.path.join(new_path, f)
                 files.append(new_file)
         return dirs, files
 
@@ -62,7 +68,7 @@ class MyHandler(FileSystemEventHandler):
     def log(self, paths, event):
         if event == 'moved':
             print(paths[0], "moved to", paths[1])
-        else :
+        else:
             print(paths[0], event)
 
     # metodo principale, maggiori dettagli nel corpo
@@ -72,7 +78,7 @@ class MyHandler(FileSystemEventHandler):
         # i valori presenti nella struttura event
         eventType = event.event_type
         srcPath = self.relativePath(event.src_path)
-        if eventType == 'moved' :
+        if eventType == 'moved':
             destPath = self.relativePath(event.dest_path)
             self.log([self.relativePath(srcPath),
                       self.relativePath(destPath)],
@@ -92,7 +98,12 @@ class MyHandler(FileSystemEventHandler):
     def modify(self, srcPath, event):
         source = os.path.join(self.path, srcPath)
         dest = os.path.join(self.dest, srcPath)
-        shutil.copyfile(source, dest)
+        if event == 'creation' and os.path.isdir(source):
+            os.mkdir(dest)
+        elif event == 'delete':
+            os.remove(dest)
+        else:
+            shutil.copyfile(source, dest)
 
     # metodo virtuale definito nella classe principale
     # recepisce ogni evento che avviena nella directory osservata

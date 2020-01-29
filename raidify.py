@@ -1,21 +1,22 @@
-import time # time.sleep
-import sys  # sys.argv
-from watchdog.observers import Observer # <--
+import time  # time.sleep
+import sys   # sys.argv
+from watchdog.observers import Observer  # <--
 from filesystem import MyHandler
 
 FLAGS = {
-    "--dryrun" : 1,
-    "--init" : 2,
-    "--verbose" : 3
+    "--dryrun": 1,
+    "--init": 2,
+    "--verbose": 3
 }
+
 
 def logo(path="", dest=""):
     logo = """
             _     _ _  __
   _ __ __ _(_) __| (_)/ _|_   _   _ __  _   _
- | '__/ _` | |/ _` | | |_| | | | | '_ \| | | |
+ | '__/ _` | |/ _` | | |_| | | | | '_ \\| | | |
  | | | (_| | | (_| | |  _| |_| |_| |_) | |_| |
- |_|  \__,_|_|\__,_|_|_|  \__, (_) .__/ \__, |
+ |_|  \\__,_|_|\\__,_|_|_|  \\__, (_) .__/ \\__, |
         THO 23/01/2020    |___/  |_|    |___/
 
     """
@@ -24,9 +25,10 @@ def logo(path="", dest=""):
         print("[src ] : " + path)
         print("[dest] : " + dest)
 
+
 def parseFlag(args):
     result = []
-    if (len(args) < 2) or args[0] == '--help' :
+    if (len(args) < 2) or args[0] == '--help':
         logo()
         print("""python3 raidify.py [ FLAGS ] <src> <dest>
 
@@ -38,7 +40,7 @@ def parseFlag(args):
     elif len(args) >= 2:
         result = args[(len(args) - 2):]
         logo(result[0], result[1])
-        flagID = 0 # flag è un array di bit da mascherare
+        flagID = 0  # flag è un array di bit da mascherare
         mask = 0
         for flag in args[:(len(args) - 2)]:
             mask = (1 << FLAGS.get(flag, 0))
@@ -49,6 +51,7 @@ def parseFlag(args):
         result.append(flagID)
 
     return result
+
 
 if __name__ == '__main__':
     args = sys.argv[1:]
