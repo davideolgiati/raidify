@@ -1,84 +1,72 @@
 import time # time.sleep
 import sys  # sys.argv
-import os   # os.path.relpath
 from watchdog.observers import Observer # <--
-from watchdog.events import FileSystemEventHandler # <--
+from filesystem import MyHandler
 
-# la calsse 'MyHandler' serve per gestire gli eventi registrati
-# dalla libreria watchdog.
-# Estende la classe 'FileSystemEventHandler' che è la classe
-# più basilare presnte nella libreria, controlla ogni cambaimento
-# senza filtraggio
-class MyHandler(FileSystemEventHandler):
-    # nel costruttore salvo il valore di path, che rappresnta
-    # la directory principale da osservare
-    def __init__(self, path, dest):
-        self.path = path
-        self.dest = dest
+FLAGS = {
+    "--dryrun" : 1,
+    "--init" : 2,
+    "--verbose" : 3
+}
 
-    # questo metodo è utilizzato unicamente per estrarre il
-    # percorso relativo da un percorso assoluto, utilizzando
-    # 'self.path'
-    def relativePath(self, full):
-        return os.path.relpath(full, self.path)
+def logo(path="", dest=""):
+    logo = """
+            _     _ _  __
+  _ __ __ _(_) __| (_)/ _|_   _   _ __  _   _
+ | '__/ _` | |/ _` | | |_| | | | | '_ \| | | |
+ | | | (_| | | (_| | |  _| |_| |_| |_) | |_| |
+ |_|  \__,_|_|\__,_|_|_|  \__, (_) .__/ \__, |
+        THO 23/01/2020    |___/  |_|    |___/
 
-    def log(self, paths, event):
-        if event == 'moved':
-            print(paths[0], "moved to", paths[1])
-        else :
-            print(paths[0], event)
+    """
+    print(logo)
+    if path != "" and dest != "":
+        print("[src ] : " + path)
+        print("[dest] : " + dest)
 
-    # metodo principale, maggiori dettagli nel corpo
-    def process(self, event):
-        # le due variabili locali che seguono hanno lo scopo
-        # di rendere il codice più leggibile, ricopiano identici
-        # i valori presenti nella struttura event
-        eventType = event.event_type
-        srcPath = self.relativePath(event.src_path)
-        if eventType == 'moved' :
-            destPath = self.relativePath(event.dest_path)
-            #self.log([self.relativePath(srcPath),
-            #          self.relativePath(destPath)],
-            #         eventType)
-            self.move(srcPath, destPath)
-        else:
-            #self.log([self.relativePath(srcPath)],
-            #         eventType)
-            self.modify(srcPath)
+def parseFlag(args):
+    result = []
+    if (len(args) < 2) or args[0] == '--help' :
+        logo()
+        print("""python3 raidify.py [ FLAGS ] <src> <dest>
 
-    def move(self, srcPath, destPath):
-        print("moving " + self.dest + srcPath + " to " + self.dest + destPath)
+                    FLAGS:
+                      --dryrun  : does nothing but print
+                      --init    : make the tow folders even
+                      --verbose : print almost everything
+                      --help    : dispalys this help, than exit """)
+    elif len(args) >= 2:
+        result = args[(len(args) - 2):]
+        logo(result[0], result[1])
+        flagID = 0 # flag è un array di bit da mascherare
+        mask = 0
+        for flag in args[:(len(args) - 2)]:
+            mask = (1 << FLAGS.get(flag, 0))
+            if mask == 1:
+                print("[ !! ] : " + flag + " flag ignored")
+            else:
+                flagID += mask
+        result.append(flagID)
 
-    def modify(self, srcPath):
-        print("updating " + self.dest + srcPath + " as " + self.path + srcPath)
-
-    # metodo virtuale definito nella classe principale
-    # recepisce ogni evento che avviena nella directory osservata
-    def on_any_event(self, event):
-        # variabile locale per controllare se un evento riguarda
-        # una directory
-        isADir = event.is_directory
-        # variabile locale per controllare se l'evento in questione
-        # è una modifica
-        isModified = (event.event_type == 'modified')
-        # in caso si tratti di un vetento modifica di una directory
-        # lo ignoriamo, non è interessante per quello che vogliamo
-        # fare in questo programma
-        if not (isADir and isModified):
-            # chiamata alla funzione cuore della classe
-            self.process(event)
+    return result
 
 if __name__ == '__main__':
     args = sys.argv[1:]
     observer = Observer()
-    path = args[0] if args else '.'
-    observer.schedule(MyHandler(path), path, recursive=True)
-    observer.start()
+    if args:
+        result = parseFlag(args)
+        if result != []:
+            path = result[0]
+            dest = result[1]
+            observer.schedule(MyHandler(path, dest, result[2]),
+                              path,
+                              recursive=True)
+            observer.start()
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                observer.stop()
 
-    observer.join()
+            observer.join()
