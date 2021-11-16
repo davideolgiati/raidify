@@ -34,8 +34,8 @@ def parseFlag(args):
 
                     FLAGS:
                       --dryrun  : does nothing but print
-                      --init    : make the tow folders even
-                      --verbose : print almost everything
+                      --init    : make two folders equal
+                      --verbose : print everything about execution
                       --help    : dispalys this help, than exit """)
     elif len(args) >= 2:
         result = args[(len(args) - 2):]
