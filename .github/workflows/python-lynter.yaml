@@ -23,7 +23,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
-          flake8 .
+          flake8 src
       - name: Lint with Pylint
         run: |
-          pylint .
+          pylint src
