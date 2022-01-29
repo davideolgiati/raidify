@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
+        python-version: [ '3.7', '3.8', '3.9' , '3.10' ]
 
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8
           pip install pylint
+          pip install pylama
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
@@ -32,3 +33,6 @@ jobs:
       - name: Lint with Pylint
         run: |
           pylint src
+      - name: Lint with Pylama
+        run: |
+          pylama src
