@@ -1,5 +1,5 @@
-"""raidify.py is a python script to keep 2 folders synced"""
-
+"""raidify.py is a python script to keep 2 folders synced."""
+import os.path
 import time  # time.sleep
 import sys   # sys.argv
 from watchdog.observers import Observer  # <--
@@ -13,8 +13,12 @@ FLAGS = {
 
 
 def logo(source="", destination=""):
-    """Function used to print the script banner (from file banner.txt)"""
-    with open("../banner.txt", "r",  encoding="UTF-8") as banner_source:
+    """Function used to print the script banner (from file banner.txt)."""
+    if os.path.abspath(os.curdir).endswith('/src'):
+        file = "banner.txt"
+    else:
+        file = "src/banner.txt"
+    with open(os.path.join(os.path.abspath(os.curdir), file), "r", encoding="UTF-8") as banner_source:
         banner = banner_source.read()
 
     print(banner)
@@ -24,7 +28,7 @@ def logo(source="", destination=""):
 
 
 def parse_flag(flags):
-    """Function used to parse script flags"""
+    """Function used to parse script flags."""
     output = []
     if (len(flags) < 2) or flags[0] == '--help':
         logo()
@@ -35,6 +39,7 @@ def parse_flag(flags):
                       --init    : make two folders equal
                       --verbose : print everything about execution
                       --help    : dispalys this help, than exit """)
+        return [-1]
     elif len(flags) >= 2:
         output = flags[(len(flags) - 2):]
         logo(output[0], output[1])

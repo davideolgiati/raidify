@@ -1,5 +1,4 @@
-"""Module containing filesystem interface logic, used to move, copy and
-delete files"""
+"""Module containing filesystem interface logic."""
 
 import os  # os.path.relpath
 import shutil
@@ -13,15 +12,15 @@ from watchdog.events import FileSystemEventHandler  # <--
 
 
 class MyHandler(FileSystemEventHandler):
-    """Main filesystem watchdog class"""
+
+    """Main filesystem watchdog class."""
+
     # nel costruttore salvo il valore di path, che rappresenta
     # la directory principale da osservare
     def __init__(self, path, dst, setup):
-        """Class constructor, used to initialize the instance
-        with correct parameters"""
+        """Class constructor."""
         self.path = path
         self.dst = dst
-        self.dry_run = (setup & 2) == 2
         self.verbose = (setup & (1 << 3)) & (1 << 3)
         if (setup & 4) == 4:  # init flag attivo
             dirs = []
@@ -50,7 +49,7 @@ class MyHandler(FileSystemEventHandler):
 
     @staticmethod
     def dir_walk(main, dst, dirs, files):
-        """Method used to explore a directory in order  to track file"""
+        """Method used to explore a directory in order to track file."""
         for dir_path, dir_names, file_names in os.walk(main):
             for current_dir in dir_names:
                 new_path = os.path.join(dst, current_dir)
@@ -70,12 +69,12 @@ class MyHandler(FileSystemEventHandler):
     # percorso relativo da un percorso assoluto, utilizzando
     # 'self.path'
     def relative_path(self, full):
-        """Wrapper method to extract relative path within a directory"""
+        """Wrapper method to extract relative path within a directory."""
         return os.path.relpath(full, self.path)
 
     @staticmethod
     def log(paths, event):
-        """Static method used to log watchdog event"""
+        """Static method used to log watchdog event."""
         if event == 'moved':
             print(paths[0], "moved to", paths[1])
         else:
@@ -83,8 +82,7 @@ class MyHandler(FileSystemEventHandler):
 
     # metodo principale, maggiori dettagli nel corpo
     def process(self, event):
-        """Main method, used to decide how to respond to an event tracked by
-        the watchdog"""
+        """Main method. Triggered in response to a filesystem event."""
         # le due variabili locali che seguono hanno lo scopo
         # di rendere il codice più leggibile, ricopiano identici
         # i valori presenti nella struttura event
@@ -103,13 +101,13 @@ class MyHandler(FileSystemEventHandler):
                 self.modify(src_path, event_type)
 
     def move(self, src_path, dst_path):
-        """File is moved action"""
+        """File is moved action."""
         old_path = os.path.join(self.dst, src_path)
         new_path = os.path.join(self.dst, dst_path)
         shutil.move(old_path, new_path)
 
     def modify(self, src_path, event):
-        """File is modified action"""
+        """File is modified action."""
         source = os.path.join(self.path, src_path)
         dst = os.path.join(self.dst, src_path)
         if event == 'creation' and os.path.isdir(source):
@@ -122,7 +120,7 @@ class MyHandler(FileSystemEventHandler):
     # metodo virtuale definito nella classe principale
     # recepisce ogni evento che avviene nella directory osservata
     def on_any_event(self, event):
-        """Override method used as entrypoint to track filesystem events"""
+        """Override method used as entrypoint to track filesystem events."""
         # variabile locale per controllare se un evento riguarda
         # una directory
         is_a_dir = event.is_directory
