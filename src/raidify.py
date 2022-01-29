@@ -14,7 +14,7 @@ FLAGS = {
 
 def logo(source="", destination=""):
     """Function used to print the script banner (from file banner.txt)"""
-    with open("./banner.txt", "r") as banner_source:
+    with open("../banner.txt", "r",  encoding="UTF-8") as banner_source:
         banner = banner_source.read()
 
     print(banner)
