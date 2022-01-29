@@ -16,9 +16,14 @@ def logo(source="", destination=""):
     """Function used to print the script banner (from file banner.txt)."""
     if os.path.abspath(os.curdir).endswith('/src'):
         file = "banner.txt"
+    elif os.path.abspath(os.curdir).endswith('/tests'):
+        file = "../src/banner.txt"
     else:
         file = "src/banner.txt"
-    with open(os.path.join(os.path.abspath(os.curdir), file), "r", encoding="UTF-8") as banner_source:
+
+    with open(os.path.join(os.path.abspath(os.curdir), file),
+              "r",
+              encoding="UTF-8") as banner_source:
         banner = banner_source.read()
 
     print(banner)
@@ -38,20 +43,20 @@ def parse_flag(flags):
                       --dryrun  : does nothing but print
                       --init    : make two folders equal
                       --verbose : print everything about execution
-                      --help    : dispalys this help, than exit """)
+                      --help    : displays this help, than exit """)
         return [-1]
-    elif len(flags) >= 2:
-        output = flags[(len(flags) - 2):]
-        logo(output[0], output[1])
-        flag_id = 0  # flag è un array di bit da mascherare
-        mask = 0
-        for flag in flags[:(len(flags) - 2)]:
-            mask = (1 << FLAGS.get(flag, 0))
-            if mask == 1:
-                print("[ !! ] : " + flag + " flag ignored")
-            else:
-                flag_id += mask
-        output.append(flag_id)
+
+    output = flags[(len(flags) - 2):]
+    logo(output[0], output[1])
+    flag_id = 0  # flag è un array di bit da mascherare
+
+    for flag in flags[:(len(flags) - 2)]:
+        mask = (1 << FLAGS.get(flag, 0))
+        if mask == 1:
+            print("[ !! ] : " + flag + " flag ignored")
+        else:
+            flag_id += mask
+    output.append(flag_id)
 
     return output
 
