@@ -1,3 +1,5 @@
+"""raidify.py is a python script to keep 2 folders synced"""
+
 import time  # time.sleep
 import sys   # sys.argv
 from watchdog.observers import Observer  # <--
@@ -10,25 +12,21 @@ FLAGS = {
 }
 
 
-def logo(path="", dest=""):
-    logo = """
-            _     _ _  __
-  _ __ __ _(_) __| (_)/ _|_   _   _ __  _   _
- | '__/ _` | |/ _` | | |_| | | | | '_ \\| | | |
- | | | (_| | | (_| | |  _| |_| |_| |_) | |_| |
- |_|  \\__,_|_|\\__,_|_|_|  \\__, (_) .__/ \\__, |
-        THO 23/01/2020    |___/  |_|    |___/
+def logo(source="", destination=""):
+    """Function used to print the script banner (from file banner.txt)"""
+    with open("./banner.txt") as banner_source:
+        banner = banner_source.read()
 
-    """
-    print(logo)
-    if path != "" and dest != "":
-        print("[src ] : " + path)
-        print("[dest] : " + dest)
+    print(banner)
+    if source != "" and destination != "":
+        print("[src] : " + source)
+        print("[dst] : " + destination)
 
 
-def parseFlag(args):
-    result = []
-    if (len(args) < 2) or args[0] == '--help':
+def parse_flag(flags):
+    """Function used to parse script flags"""
+    output = []
+    if (len(flags) < 2) or flags[0] == '--help':
         logo()
         print("""python3 raidify.py [ FLAGS ] <src> <dest>
 
@@ -37,32 +35,32 @@ def parseFlag(args):
                       --init    : make two folders equal
                       --verbose : print everything about execution
                       --help    : dispalys this help, than exit """)
-    elif len(args) >= 2:
-        result = args[(len(args) - 2):]
-        logo(result[0], result[1])
-        flagID = 0  # flag è un array di bit da mascherare
+    elif len(flags) >= 2:
+        output = flags[(len(flags) - 2):]
+        logo(output[0], output[1])
+        flag_id = 0  # flag è un array di bit da mascherare
         mask = 0
-        for flag in args[:(len(args) - 2)]:
+        for flag in flags[:(len(flags) - 2)]:
             mask = (1 << FLAGS.get(flag, 0))
             if mask == 1:
                 print("[ !! ] : " + flag + " flag ignored")
             else:
-                flagID += mask
-        result.append(flagID)
+                flag_id += mask
+        output.append(flag_id)
 
-    return result
+    return output
 
 
 if __name__ == '__main__':
     args = sys.argv[1:]
     observer = Observer()
     if args:
-        result = parseFlag(args)
-        if result != []:
-            path = result[0]
-            dest = result[1]
-            observer.schedule(MyHandler(path, dest, result[2]),
-                              path,
+        result = parse_flag(args)
+        if result:
+            source_path = result[0]
+            destination_path = result[1]
+            observer.schedule(MyHandler(source_path, destination_path, result[2]),
+                              source_path,
                               recursive=True)
             observer.start()
 
