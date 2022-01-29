@@ -1,4 +1,5 @@
-"""Module containing filesystem interface logic, used to move, copy and delete files"""
+"""Module containing filesystem interface logic, used to move, copy and
+delete files"""
 
 import os  # os.path.relpath
 import shutil

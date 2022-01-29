@@ -59,9 +59,14 @@ if __name__ == '__main__':
         if result:
             source_path = result[0]
             destination_path = result[1]
-            observer.schedule(MyHandler(source_path, destination_path, result[2]),
-                              source_path,
-                              recursive=True)
+            observer.schedule(
+                MyHandler(
+                    source_path,
+                    destination_path,
+                    result[2]
+                ),
+                source_path,
+                recursive=True)
             observer.start()
 
             try:
