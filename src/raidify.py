@@ -1,8 +1,11 @@
 """raidify.py is a python script to keep 2 folders synced."""
+import sys
+import time
 import os.path
-import time  # time.sleep
-import sys   # sys.argv
-from watchdog.observers import Observer  # <--
+import argparse
+
+from watchdog.observers import Observer
+
 from filesystem import MyHandler
 
 FLAGS = {
@@ -34,31 +37,48 @@ def logo(source="", destination=""):
 
 def parse_flag(flags):
     """Function used to parse script flags."""
-    output = []
-    if (len(flags) < 2) or flags[0] == '--help':
-        logo()
-        print("""python3 raidify.py [ FLAGS ] <src> <dest>
+    parser = argparse.ArgumentParser(
+        description='raidify.py is a python script to keep 2 folders synced.'
+    )
 
-                    FLAGS:
-                      --dryrun  : does nothing but print
-                      --init    : make two folders equal
-                      --verbose : print everything about execution
-                      --help    : displays this help, than exit """)
-        return [-1]
+    # Informazioni sulle directory da duplicare
+    parser.add_argument('src',
+                        type=str,
+                        help='The source directory to clone')
+    parser.add_argument('dst',
+                        type=str,
+                        help='The destination directory')
 
-    output = flags[(len(flags) - 2):]
-    logo(output[0], output[1])
-    flag_id = 0  # flag è un array di bit da mascherare
+    # Flag opzionali
+    parser.add_argument('--dryrun',
+                        action='store_true',
+                        help='Just print, does not modify filesystem - WIP')
+    parser.add_argument('--init',
+                        action='store_true',
+                        help='Sync the two folders before starting the watchdog')
+    parser.add_argument('--verbose',
+                        action='store_true',
+                        help='Print everything during execution')
 
-    for flag in flags[:(len(flags) - 2)]:
-        mask = (1 << FLAGS.get(flag, 0))
-        if mask == 1:
-            print("[ !! ] : " + flag + " flag ignored")
-        else:
-            flag_id += mask
-    output.append(flag_id)
+    parsed_args = parser.parse_args(flags)
 
-    return output
+    if not os.path.isdir(parsed_args.src):
+        parser.error(
+            "{} is not recognized as a valid directory in the filesystem"
+            .format(
+                parsed_args.src
+            )
+        )
+
+    if not os.path.isdir(parsed_args.dst):
+        parser.error(
+            "{} is not recognized as a valid directory in the filesystem"
+            .format(
+                parsed_args.dst
+            )
+        )
+
+    return parsed_args
 
 
 if __name__ == '__main__':
