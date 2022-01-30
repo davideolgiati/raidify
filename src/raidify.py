@@ -23,9 +23,7 @@ def logo(source, destination):
               encoding="UTF-8") as banner_source:
         banner = banner_source.read()
 
-    return "{}\n[src] : {}\n[dst] : {}".format(
-        banner, source, destination
-    )
+    return f"{banner}\n[src] : {source}\n[dst] : {destination}"
 
 
 def parse_flag(flags):
