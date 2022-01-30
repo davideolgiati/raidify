@@ -17,12 +17,13 @@ class MyHandler(FileSystemEventHandler):
 
     # nel costruttore salvo il valore di path, che rappresenta
     # la directory principale da osservare
-    def __init__(self, path, dst, setup):
+    def __init__(self, path, dst, init, dryrun, verbose):
         """Class constructor."""
         self.path = path
         self.dst = dst
-        self.verbose = (setup & (1 << 3)) & (1 << 3)
-        if (setup & 4) == 4:  # init flag attivo
+        self.dryrun = dryrun
+        self.verbose = verbose
+        if init:  # init flag attivo
             dirs = []
             files = []
             dirs, files = self.dir_walk(path, dst, dirs, files)

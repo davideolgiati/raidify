@@ -53,13 +53,13 @@ def parse_flag(flags):
 
     if not os.path.isdir(parsed_args.src):
         parser.error(
-            "{} is not recognized as a valid directory in the filesystem"
-            .format(parsed_args.src))
+            f"{parsed_args.src} is not recognized as a "
+            f"valid directory in the filesystem")
 
     if not os.path.isdir(parsed_args.dst):
         parser.error(
-            "{} is not recognized as a valid directory in the filesystem"
-            .format(parsed_args.dst))
+            f"{parsed_args.dst} is not recognized as a "
+            f"valid directory in the filesystem")
 
     return parsed_args
 
@@ -73,9 +73,9 @@ if __name__ == '__main__':
     logo(source_path, destination_path)
 
     observer.schedule(
-        MyHandler(source_path,
-                  destination_path,
-                  result[2]),
+        MyHandler(source_path, destination_path,
+                  result.init, result.dryrun,
+                  result.verbose),
         source_path,
         recursive=True)
     observer.start()
