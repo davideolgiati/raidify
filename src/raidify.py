@@ -8,14 +8,8 @@ from watchdog.observers import Observer
 
 from filesystem import MyHandler
 
-FLAGS = {
-    "--dryrun": 1,
-    "--init": 2,
-    "--verbose": 3
-}
 
-
-def logo(source="", destination=""):
+def logo(source, destination):
     """Function used to print the script banner (from file banner.txt)."""
     if os.path.abspath(os.curdir).endswith('/src'):
         file = "banner.txt"
@@ -29,10 +23,9 @@ def logo(source="", destination=""):
               encoding="UTF-8") as banner_source:
         banner = banner_source.read()
 
-    print(banner)
-    if source != "" and destination != "":
-        print("[src] : " + source)
-        print("[dst] : " + destination)
+    return "{}\n[src] : {}\n[dst] : {}".format(
+        banner, source, destination
+    )
 
 
 def parse_flag(flags):
@@ -42,67 +35,57 @@ def parse_flag(flags):
     )
 
     # Informazioni sulle directory da duplicare
-    parser.add_argument('src',
-                        type=str,
+    parser.add_argument('src', type=str,
                         help='The source directory to clone')
-    parser.add_argument('dst',
-                        type=str,
+    parser.add_argument('dst', type=str,
                         help='The destination directory')
 
     # Flag opzionali
-    parser.add_argument('--dryrun',
-                        action='store_true',
-                        help='Just print, does not modify filesystem - WIP')
-    parser.add_argument('--init',
-                        action='store_true',
-                        help='Sync the two folders before starting the watchdog')
-    parser.add_argument('--verbose',
-                        action='store_true',
-                        help='Print everything during execution')
+    parser.add_argument(
+        '-d', '--dryrun', action='store_true',
+        help='Just print, does not modify filesystem - WIP')
+    parser.add_argument(
+        '-i', '--init', action='store_true',
+        help='Sync the two folders before starting the watchdog')
+    parser.add_argument(
+        '-v', '--verbose', action='store_true',
+        help='Print everything during execution')
 
     parsed_args = parser.parse_args(flags)
 
     if not os.path.isdir(parsed_args.src):
         parser.error(
             "{} is not recognized as a valid directory in the filesystem"
-            .format(
-                parsed_args.src
-            )
-        )
+            .format(parsed_args.src))
 
     if not os.path.isdir(parsed_args.dst):
         parser.error(
             "{} is not recognized as a valid directory in the filesystem"
-            .format(
-                parsed_args.dst
-            )
-        )
+            .format(parsed_args.dst))
 
     return parsed_args
 
 
 if __name__ == '__main__':
-    args = sys.argv[1:]
     observer = Observer()
-    if args:
-        result = parse_flag(args)
-        if result:
-            source_path = result[0]
-            destination_path = result[1]
-            observer.schedule(
-                MyHandler(
-                    source_path,
-                    destination_path,
-                    result[2]
-                ),
-                source_path,
-                recursive=True)
-            observer.start()
+    result = parse_flag(sys.argv)
+    source_path = result.src
+    destination_path = result.dst
 
-            try:
-                while True:
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                observer.stop()
+    logo(source_path, destination_path)
 
-            observer.join()
+    observer.schedule(
+        MyHandler(source_path,
+                  destination_path,
+                  result[2]),
+        source_path,
+        recursive=True)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+
+    observer.join()
