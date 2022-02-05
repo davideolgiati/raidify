@@ -64,9 +64,9 @@ def parse_flag(flags):
     return parsed_args
 
 
-def setup(argv):
+def setup(cli_args):
     """Function used to initialize MyHandler class"""
-    flags = parse_flag(argv)
+    flags = parse_flag(cli_args)
     logo(flags.src, flags.dst)
     _handler = MyHandler(
         flags.src, flags.dst,
