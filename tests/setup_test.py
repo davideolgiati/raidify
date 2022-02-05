@@ -1,4 +1,5 @@
 import os.path
+import sys
 
 from test_utils import temp_dirs
 from raidify import setup
@@ -8,8 +9,8 @@ from unittest import TestCase
 class SetupTest(TestCase):
     @temp_dirs
     def test_just_dirs(self, source, destination):
-        args = [source, destination]
-        path, handler = setup(args)
+        sys.argv = [source, destination]
+        path, handler = setup(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -18,8 +19,8 @@ class SetupTest(TestCase):
 
     @temp_dirs
     def test_verbose(self, source, destination):
-        args = [source, destination, "--verbose"]
-        path, handler = setup(args)
+        sys.argv = [source, destination, "--verbose"]
+        path, handler = setup(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -28,8 +29,8 @@ class SetupTest(TestCase):
 
     @temp_dirs
     def test_dryrun(self, source, destination):
-        args = [source, destination, "--dryrun"]
-        path, handler = setup(args)
+        sys.argv = [source, destination, "--dryrun"]
+        path, handler = setup(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -38,8 +39,8 @@ class SetupTest(TestCase):
 
     @temp_dirs
     def test_dryrun_verbose(self, source, destination):
-        args = [source, destination, "--dryrun", "--verbose"]
-        path, handler = setup(args)
+        sys.argv = [source, destination, "--dryrun", "--verbose"]
+        path, handler = setup(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -48,7 +49,7 @@ class SetupTest(TestCase):
 
     @temp_dirs
     def test_init_one_file(self, source, destination):
-        args = [source, destination, "--init"]
+        sys.argv = [source, destination, "--init"]
 
         with open(
             os.path.join(source, "test.txt"), "w", encoding="UTF-8"
@@ -57,7 +58,7 @@ class SetupTest(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(source, "test.txt")))
         self.assertFalse(os.path.isfile(os.path.join(destination, "test.txt")))
 
-        path, handler = setup(args)
+        path, handler = setup(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -72,7 +73,7 @@ class SetupTest(TestCase):
 
     @temp_dirs
     def test_init_one_dir_one_file(self, source, destination):
-        args = [source, destination, "--init", "--verbose"]
+        sys.argv = [source, destination, "--init", "--verbose"]
         os.mkdir(os.path.join(source, "new_dir/"))
         with open(
             os.path.join(source, "new_dir/test.txt"), "w", encoding="UTF-8"
@@ -86,7 +87,7 @@ class SetupTest(TestCase):
             os.path.isfile(os.path.join(destination, "new_dir/test.txt"))
         )
 
-        path, handler = setup(args)
+        path, handler = setup(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
