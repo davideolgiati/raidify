@@ -2,7 +2,7 @@ import os.path
 import sys
 
 from test_utils import temp_dirs
-from raidify import setup
+from raidify import setup_var_from_args
 from unittest import TestCase
 
 
@@ -10,7 +10,7 @@ class MainRaidifyModuleTest(TestCase):
     @temp_dirs
     def test_just_dirs(self, source, destination):
         sys.argv = [source, destination]
-        path, handler = setup(sys.argv)
+        path, handler = setup_var_from_args(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -20,7 +20,7 @@ class MainRaidifyModuleTest(TestCase):
     @temp_dirs
     def test_verbose(self, source, destination):
         sys.argv = [source, destination, "--verbose"]
-        path, handler = setup(sys.argv)
+        path, handler = setup_var_from_args(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -30,7 +30,7 @@ class MainRaidifyModuleTest(TestCase):
     @temp_dirs
     def test_dryrun(self, source, destination):
         sys.argv = [source, destination, "--dryrun"]
-        path, handler = setup(sys.argv)
+        path, handler = setup_var_from_args(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -40,7 +40,7 @@ class MainRaidifyModuleTest(TestCase):
     @temp_dirs
     def test_dryrun_verbose(self, source, destination):
         sys.argv = [source, destination, "--dryrun", "--verbose"]
-        path, handler = setup(sys.argv)
+        path, handler = setup_var_from_args(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -58,7 +58,7 @@ class MainRaidifyModuleTest(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(source, "test.txt")))
         self.assertFalse(os.path.isfile(os.path.join(destination, "test.txt")))
 
-        path, handler = setup(sys.argv)
+        path, handler = setup_var_from_args(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
@@ -87,7 +87,7 @@ class MainRaidifyModuleTest(TestCase):
             os.path.isfile(os.path.join(destination, "new_dir/test.txt"))
         )
 
-        path, handler = setup(sys.argv)
+        path, handler = setup_var_from_args(sys.argv)
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)

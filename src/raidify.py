@@ -73,7 +73,7 @@ def parse_flag(flags):
     return parsed_args
 
 
-def setup(cli_args):
+def setup_var_from_args(cli_args):
     """Function used to initialize MyHandler class"""
     flags = parse_flag(cli_args)
     logo(flags.src, flags.dst)
@@ -92,7 +92,7 @@ def setup(cli_args):
 if __name__ == "__main__":
     print(sys.argv[1:])
     observer = Observer()
-    path, handler = setup(sys.argv[1:])
+    path, handler = setup_var_from_args(sys.argv[1:])
     observer.schedule(handler, path, recursive=True)
     observer.start()
 
