@@ -5,7 +5,7 @@ from raidify import setup
 from unittest import TestCase
 
 
-class FlagsTest(TestCase):
+class SetupTest(TestCase):
     @temp_dirs
     def test_just_dirs(self, source, destination):
         path, handler = setup([source, destination])
