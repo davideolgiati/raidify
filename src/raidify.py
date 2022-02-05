@@ -64,20 +64,26 @@ def parse_flag(flags):
     return parsed_args
 
 
+def setup(argv):
+    """Function used to initialize MyHandler class"""
+    flags = parse_flag(argv)
+    logo(flags.src, flags.dst)
+    _handler = MyHandler(
+        flags.src, flags.dst,
+        args={
+            'init': flags.init,
+            'dryrun': flags.dryrun,
+            'verbose': flags.verbose
+        })
+    return flags.src, _handler
+
+
 if __name__ == '__main__':
     observer = Observer()
-    result = parse_flag(sys.argv)
-    source_path = result.src
-    destination_path = result.dst
-
-    logo(source_path, destination_path)
-
-    observer.schedule(
-        MyHandler(source_path, destination_path,
-                  result.init, result.dryrun,
-                  result.verbose),
-        source_path,
-        recursive=True)
+    path, handler = setup(sys.argv)
+    observer.schedule(handler,
+                      path,
+                      recursive=True)
     observer.start()
 
     try:

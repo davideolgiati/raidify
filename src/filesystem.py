@@ -17,17 +17,14 @@ class MyHandler(FileSystemEventHandler):
 
     # nel costruttore salvo il valore di path, che rappresenta
     # la directory principale da osservare
-    def __init__(self, path, dst, init, dryrun, verbose):
+    def __init__(self, src, dst, args):
         """Class constructor."""
-        self.path = path
+        self.path = src
         self.dst = dst
-        self.dryrun = dryrun
-        self.verbose = verbose
-        if init:  # init flag attivo
-            dirs = []
-            files = []
-            dirs, files = self.dir_walk(path, dst, dirs, files)
-            dirs, files = self.dir_walk(dst, path, dirs, files)
+        self.dryrun = args["dryrun"]
+        self.verbose = args["verbose"]
+        if args["init"]:  # init flag attivo
+            dirs, files = self.dir_walk(self.path, self.dst, [], [])
             if self.verbose:
                 print("\nDIRS to be duplicated: ")
             for current_dir in dirs:
@@ -40,13 +37,13 @@ class MyHandler(FileSystemEventHandler):
             if self.verbose:
                 print("\nFILES to be duplicated: ")
             for dst_file in files:
-                src = os.path.join(path,
+                src = os.path.join(src,
                                    os.path.relpath(dst_file,
                                                    dst))
                 if not os.path.isfile(dst_file):
                     if self.verbose:
                         print("\t" + dst_file)
-                    shutil.copy2(src, dst)
+                    shutil.copy(src, dst_file)
 
     @staticmethod
     def dir_walk(main, dst, dirs, files):
@@ -116,7 +113,7 @@ class MyHandler(FileSystemEventHandler):
         elif event == 'delete':
             os.remove(dst)
         else:
-            shutil.copyfile(source, dst)
+            shutil.copy(source, dst)
 
     # metodo virtuale definito nella classe principale
     # recepisce ogni evento che avviene nella directory osservata

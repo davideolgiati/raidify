@@ -33,7 +33,7 @@ jobs:
           flake8 src
       - name: Lint with Pylint
         run: |
-          pylint src
+          pylint src --fail-under=9
       - name: Static Analysis with Bandit
         run: |
           bandit src

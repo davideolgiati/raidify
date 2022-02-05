@@ -1,22 +1,9 @@
-import tempfile
-
-from raidify import parse_flag, logo
+from test_utils import temp_dirs
+from raidify import parse_flag
 from unittest import TestCase
 
 
-def temp_dirs(func):
-    """Decorator to generate temporary directories."""
-
-    def wrap(*args, **kwargs):
-        with tempfile.TemporaryDirectory() as source:
-            with tempfile.TemporaryDirectory() as destination:
-                func(*args, **kwargs,
-                     source=str(source), destination=str(destination))
-
-    return wrap
-
-
-class RaidifyTest(TestCase):
+class FlagsTest(TestCase):
     @temp_dirs
     def test_no_args(self, source, destination):
         # No args at all
@@ -91,14 +78,3 @@ class RaidifyTest(TestCase):
         self.assertFalse(output.init)
         self.assertTrue(output.verbose)
         self.assertFalse(output.dryrun)
-
-    @temp_dirs
-    def test_logo(self, source, destination):
-        # No flags, just directories
-        output = parse_flag([source, destination, '--verbose'])
-        banner = logo(output.src, output.dst)
-        with open('src/banner.txt', 'r', encoding='UTF-8') as in_file:
-            bnr = in_file.read()
-            self.assertEqual(banner,
-                             '{}\n[src] : {}\n[dst] : {}'.format(
-                                 bnr, source, destination))

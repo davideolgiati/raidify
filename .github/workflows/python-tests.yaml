@@ -29,4 +29,4 @@ jobs:
           pip install -r requirements.txt
       - name: Coverage testing with pytest
         run: |
-          pytest --cov=src
+          pytest
