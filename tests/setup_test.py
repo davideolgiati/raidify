@@ -2,7 +2,8 @@ import os.path
 import sys
 
 from test_utils import temp_dirs
-from raidify import setup
+from raidify import setup, parse_flag
+from filesystem import MyHandler
 from unittest import TestCase
 
 
@@ -10,8 +11,17 @@ class SetupTest(TestCase):
     @temp_dirs
     def test_just_dirs(self, source, destination):
         sys.argv = [source, destination]
-        path, handler = setup(sys.argv)
-        self.assertEqual(source, path)
+
+        flags = parse_flag(sys.argv)
+        handler = MyHandler(
+            flags.src,
+            flags.dst,
+            args={
+                "init": flags.init,
+                "dryrun": flags.dryrun,
+                "verbose": flags.verbose,
+            },
+        )
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
         self.assertFalse(handler.dryrun)
@@ -20,8 +30,17 @@ class SetupTest(TestCase):
     @temp_dirs
     def test_verbose(self, source, destination):
         sys.argv = [source, destination, "--verbose"]
-        path, handler = setup(sys.argv)
-        self.assertEqual(source, path)
+
+        flags = parse_flag(sys.argv)
+        handler = MyHandler(
+            flags.src,
+            flags.dst,
+            args={
+                "init": flags.init,
+                "dryrun": flags.dryrun,
+                "verbose": flags.verbose,
+            },
+        )
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
         self.assertFalse(handler.dryrun)
@@ -30,8 +49,17 @@ class SetupTest(TestCase):
     @temp_dirs
     def test_dryrun(self, source, destination):
         sys.argv = [source, destination, "--dryrun"]
-        path, handler = setup(sys.argv)
-        self.assertEqual(source, path)
+
+        flags = parse_flag(sys.argv)
+        handler = MyHandler(
+            flags.src,
+            flags.dst,
+            args={
+                "init": flags.init,
+                "dryrun": flags.dryrun,
+                "verbose": flags.verbose,
+            },
+        )
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
         self.assertTrue(handler.dryrun)
@@ -40,8 +68,17 @@ class SetupTest(TestCase):
     @temp_dirs
     def test_dryrun_verbose(self, source, destination):
         sys.argv = [source, destination, "--dryrun", "--verbose"]
-        path, handler = setup(sys.argv)
-        self.assertEqual(source, path)
+
+        flags = parse_flag(sys.argv)
+        handler = MyHandler(
+            flags.src,
+            flags.dst,
+            args={
+                "init": flags.init,
+                "dryrun": flags.dryrun,
+                "verbose": flags.verbose,
+            },
+        )
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
         self.assertTrue(handler.dryrun)
@@ -58,8 +95,16 @@ class SetupTest(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(source, "test.txt")))
         self.assertFalse(os.path.isfile(os.path.join(destination, "test.txt")))
 
-        path, handler = setup(sys.argv)
-        self.assertEqual(source, path)
+        flags = parse_flag(sys.argv)
+        handler = MyHandler(
+            flags.src,
+            flags.dst,
+            args={
+                "init": flags.init,
+                "dryrun": flags.dryrun,
+                "verbose": flags.verbose,
+            },
+        )
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
         self.assertFalse(handler.dryrun)
@@ -87,8 +132,16 @@ class SetupTest(TestCase):
             os.path.isfile(os.path.join(destination, "new_dir/test.txt"))
         )
 
-        path, handler = setup(sys.argv)
-        self.assertEqual(source, path)
+        flags = parse_flag(sys.argv)
+        handler = MyHandler(
+            flags.src,
+            flags.dst,
+            args={
+                "init": flags.init,
+                "dryrun": flags.dryrun,
+                "verbose": flags.verbose,
+            },
+        )
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
         self.assertFalse(handler.dryrun)
