@@ -37,9 +37,7 @@ class MyHandler(FileSystemEventHandler):
             if self.verbose:
                 print("\nFILES to be duplicated: ")
             for dst_file in files:
-                src = os.path.join(src,
-                                   os.path.relpath(dst_file,
-                                                   dst))
+                src = os.path.join(src, os.path.relpath(dst_file, dst))
                 if not os.path.isfile(dst_file):
                     if self.verbose:
                         print("\t" + dst_file)
@@ -73,7 +71,7 @@ class MyHandler(FileSystemEventHandler):
     @staticmethod
     def log(paths, event):
         """Static method used to log watchdog event."""
-        if event == 'moved':
+        if event == "moved":
             print(paths[0], "moved to", paths[1])
         else:
             print(paths[0], event)
@@ -86,16 +84,16 @@ class MyHandler(FileSystemEventHandler):
         # i valori presenti nella struttura event
         event_type = event.event_type
         src_path = self.relative_path(event.src_path)
-        if event_type == 'moved':
+        if event_type == "moved":
             dst_path = self.relative_path(event.dest_path)
-            self.log([self.relative_path(src_path),
-                      self.relative_path(dst_path)],
-                     event_type)
+            self.log(
+                [self.relative_path(src_path), self.relative_path(dst_path)],
+                event_type,
+            )
             self.move(src_path, dst_path)
         else:
-            self.log([self.relative_path(src_path)],
-                     event_type)
-            if not (not event.is_directory and event_type == 'created'):
+            self.log([self.relative_path(src_path)], event_type)
+            if not (not event.is_directory and event_type == "created"):
                 self.modify(src_path, event_type)
 
     def move(self, src_path, dst_path):
@@ -108,9 +106,9 @@ class MyHandler(FileSystemEventHandler):
         """File is modified action."""
         source = os.path.join(self.path, src_path)
         dst = os.path.join(self.dst, src_path)
-        if event == 'creation' and os.path.isdir(source):
+        if event == "creation" and os.path.isdir(source):
             os.mkdir(dst)
-        elif event == 'delete':
+        elif event == "delete":
             os.remove(dst)
         else:
             shutil.copy(source, dst)
@@ -124,7 +122,7 @@ class MyHandler(FileSystemEventHandler):
         is_a_dir = event.is_directory
         # variabile locale per controllare se l'evento in questione
         # è una modifica
-        is_modified = (event.event_type == 'modified')
+        is_modified = event.event_type == "modified"
         # in caso si tratti di un evento modifica di una directory
         # lo ignoriamo, non è interessante per quello che vogliamo
         # fare in questo programma

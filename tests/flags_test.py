@@ -26,7 +26,7 @@ class FlagsTest(TestCase):
     def test_wrong_src(self, source, destination):
         # Non existing directories
         try:
-            output = parse_flag(['./wrong_source', destination])
+            output = parse_flag(["./wrong_source", destination])
             self.fail()
         except:
             pass
@@ -34,7 +34,7 @@ class FlagsTest(TestCase):
     @temp_dirs
     def test_wrong_dst(self, source, destination):
         try:
-            output = parse_flag([source, './wrong_destination'])
+            output = parse_flag([source, "./wrong_destination"])
             self.fail()
         except:
             pass
@@ -52,7 +52,7 @@ class FlagsTest(TestCase):
     @temp_dirs
     def test_dryrun_flags(self, source, destination):
         # No flags, just directories
-        output = parse_flag([source, destination, '--dryrun'])
+        output = parse_flag([source, destination, "--dryrun"])
         self.assertEqual(output.src, source)
         self.assertEqual(output.dst, destination)
         self.assertFalse(output.init)
@@ -62,7 +62,7 @@ class FlagsTest(TestCase):
     @temp_dirs
     def test_init_flags(self, source, destination):
         # No flags, just directories
-        output = parse_flag([source, destination, '--init'])
+        output = parse_flag([source, destination, "--init"])
         self.assertEqual(output.src, source)
         self.assertEqual(output.dst, destination)
         self.assertTrue(output.init)
@@ -72,7 +72,7 @@ class FlagsTest(TestCase):
     @temp_dirs
     def test_verbose_flags(self, source, destination):
         # No flags, just directories
-        output = parse_flag([source, destination, '--verbose'])
+        output = parse_flag([source, destination, "--verbose"])
         self.assertEqual(output.src, source)
         self.assertEqual(output.dst, destination)
         self.assertFalse(output.init)
