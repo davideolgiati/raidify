@@ -79,8 +79,9 @@ def setup(cli_args):
 
 
 if __name__ == '__main__':
+    print(sys.argv[1:])
     observer = Observer()
-    path, handler = setup(sys.argv)
+    path, handler = setup(sys.argv[1:])
     observer.schedule(handler,
                       path,
                       recursive=True)
