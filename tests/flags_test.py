@@ -1,6 +1,8 @@
-from test_utils import temp_dirs
-from raidify import parse_flag
 from unittest import TestCase
+
+from test_utils import temp_dirs
+
+from raidify import parse_flag
 
 
 class FlagsTest(TestCase):

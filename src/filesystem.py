@@ -2,8 +2,9 @@
 
 import os  # os.path.relpath
 import shutil
-from watchdog.events import FileSystemEventHandler  # <--
+import logging
 
+from watchdog.events import FileSystemEventHandler  # <--
 
 # La classe 'MyHandler' serve per gestire gli eventi registrati
 # dalla libreria watchdog.
@@ -61,71 +62,10 @@ class MyHandler(FileSystemEventHandler):
                 files.append(new_file)
         return dirs, files
 
-    # questo metodo è utilizzato unicamente per estrarre il
-    # percorso relativo da un percorso assoluto, utilizzando
-    # 'self.path'
-    def relative_path(self, full):
-        """Wrapper method to extract relative path within a directory."""
-        return os.path.relpath(full, self.path)
-
-    @staticmethod
-    def log(paths, event):
-        """Static method used to log watchdog event."""
-        if event == "moved":
-            print(paths[0], "moved to", paths[1])
+    def on_created(self, event):
+        if event.is_directory:
+            rel_path = os.path.relpath(event.src_path, self.path)
+            dst_dir = os.path.join(self.dst, rel_path)
+            os.mkdir(dst_dir)
         else:
-            print(paths[0], event)
-
-    # metodo principale, maggiori dettagli nel corpo
-    def process(self, event):
-        """Main method. Triggered in response to a filesystem event."""
-        # le due variabili locali che seguono hanno lo scopo
-        # di rendere il codice più leggibile, ricopiano identici
-        # i valori presenti nella struttura event
-        event_type = event.event_type
-        src_path = self.relative_path(event.src_path)
-        if event_type == "moved":
-            dst_path = self.relative_path(event.dest_path)
-            self.log(
-                [self.relative_path(src_path), self.relative_path(dst_path)],
-                event_type,
-            )
-            self.move(src_path, dst_path)
-        else:
-            self.log([self.relative_path(src_path)], event_type)
-            if not (not event.is_directory and event_type == "created"):
-                self.modify(src_path, event_type)
-
-    def move(self, src_path, dst_path):
-        """File is moved action."""
-        old_path = os.path.join(self.dst, src_path)
-        new_path = os.path.join(self.dst, dst_path)
-        shutil.move(old_path, new_path)
-
-    def modify(self, src_path, event):
-        """File is modified action."""
-        source = os.path.join(self.path, src_path)
-        dst = os.path.join(self.dst, src_path)
-        if event == "creation" and os.path.isdir(source):
-            os.mkdir(dst)
-        elif event == "delete":
-            os.remove(dst)
-        else:
-            shutil.copy(source, dst)
-
-    # metodo virtuale definito nella classe principale
-    # recepisce ogni evento che avviene nella directory osservata
-    def on_any_event(self, event):
-        """Override method used as entrypoint to track filesystem events."""
-        # variabile locale per controllare se un evento riguarda
-        # una directory
-        is_a_dir = event.is_directory
-        # variabile locale per controllare se l'evento in questione
-        # è una modifica
-        is_modified = event.event_type == "modified"
-        # in caso si tratti di un evento modifica di una directory
-        # lo ignoriamo, non è interessante per quello che vogliamo
-        # fare in questo programma
-        if not (is_a_dir and is_modified):
-            # chiamata alla funzione cuore della classe
-            self.process(event)
+            pass

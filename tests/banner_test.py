@@ -1,9 +1,11 @@
-from test_utils import temp_dirs
-from raidify import parse_flag, logo
 from unittest import TestCase
 
+from test_utils import temp_dirs
 
-class FlagsTest(TestCase):
+from raidify import logo, parse_flag
+
+
+class BannerTest(TestCase):
     @temp_dirs
     def test_logo(self, source, destination):
         # No flags, just directories
