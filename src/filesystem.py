@@ -2,7 +2,6 @@
 
 import os  # os.path.relpath
 import shutil
-import logging
 
 from watchdog.events import FileSystemEventHandler  # <--
 
@@ -63,9 +62,9 @@ class MyHandler(FileSystemEventHandler):
         return dirs, files
 
     def on_created(self, event):
+        rel_path = os.path.relpath(event.src_path, self.path)
+        dst_obj = os.path.join(self.dst, rel_path)
         if event.is_directory:
-            rel_path = os.path.relpath(event.src_path, self.path)
-            dst_dir = os.path.join(self.dst, rel_path)
-            os.mkdir(dst_dir)
+            os.mkdir(dst_obj)
         else:
-            pass
+            shutil.copy(event.src_path, dst_obj)

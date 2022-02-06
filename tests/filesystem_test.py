@@ -2,9 +2,9 @@ import os.path
 import sys
 import time
 from unittest import TestCase
-from watchdog.observers import Observer
 
 from test_utils import temp_dirs
+from watchdog.observers import Observer
 
 from raidify import setup_var_from_args
 
@@ -37,3 +37,34 @@ class FilesystemTest(TestCase):
 
         self.assertTrue(os.path.isdir(os.path.join(source, "new_dir/")))
         self.assertTrue(os.path.isdir(os.path.join(destination, "new_dir/")))
+
+    @temp_dirs
+    def test_create_file(self, source, destination):
+        sys.argv = [source, destination, "--verbose"]
+        self.assertFalse(os.path.isdir(os.path.join(source, "new_file.txt")))
+        self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
+
+        path, handler = setup_var_from_args(sys.argv)
+
+        self.assertEqual(source, path)
+        self.assertEqual(source, handler.path)
+        self.assertEqual(destination, handler.dst)
+        self.assertFalse(handler.dryrun)
+        self.assertTrue(handler.verbose)
+
+        observer = Observer()
+        observer.schedule(handler, path, recursive=True)
+        observer.start()
+
+        with open(os.path.join(source, "new_file.txt"), 'w', encoding="UTF-8") as new_file:
+            new_file.write("test integrazione 3")
+
+        time.sleep(2)
+
+        observer.stop()
+        observer.join()
+
+        self.assertTrue(os.path.isfile(os.path.join(source, "new_file.txt")))
+        self.assertTrue(os.path.isfile(os.path.join(destination, "new_file.txt")))
+        with open(os.path.join(destination, "new_file.txt"), 'r', encoding="UTF-8") as new_dest_file:
+            self.assertEqual(new_dest_file.read(), "test integrazione 3")
