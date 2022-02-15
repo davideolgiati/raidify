@@ -1,5 +1,5 @@
 """Module containing filesystem interface logic."""
-
+import logging
 import os  # os.path.relpath
 import shutil
 
@@ -20,9 +20,14 @@ class MyHandler(FileSystemEventHandler):
     def __init__(self, src, dst, args):
         """Class constructor."""
         self.path = src
+        logging.info(f"Source Path : src={self.path}")
         self.dst = dst
+        logging.info(f"Destination Path : dst={self.dst}")
         self.dryrun = args["dryrun"]
+        logging.info(f"Dryrun flag : args[\"dryrun\"]={self.dryrun}")
         self.verbose = args["verbose"]
+        logging.info(f"Verbose flag : args[\"verbose\"]={self.verbose}")
+        logging.info(f"Init Flag : args[\"init\"]={args['init']}")
         if args["init"]:  # init flag attivo
             dirs, files = self.dir_walk(self.path, self.dst, [], [])
             if self.verbose:
@@ -62,6 +67,7 @@ class MyHandler(FileSystemEventHandler):
         return dirs, files
 
     def on_created(self, event):
+        print(event.src_path)
         rel_path = os.path.relpath(event.src_path, self.path)
         dst_obj = os.path.join(self.dst, rel_path)
         if event.is_directory:

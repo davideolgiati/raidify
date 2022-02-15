@@ -1,5 +1,6 @@
 """raidify.py is a python script to keep 2 folders synced."""
 import argparse
+import logging
 import os.path
 import sys
 import time
@@ -91,6 +92,7 @@ def setup_var_from_args(cli_args):
 
 if __name__ == "__main__":
     observer = Observer()
+    logging.basicConfig(level=logging.DEBUG)
     path, handler = setup_var_from_args(sys.argv[1:])
     observer.schedule(handler, path, recursive=True)
     observer.start()
