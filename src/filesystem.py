@@ -1,14 +1,9 @@
 """Module containing filesystem interface logic."""
-import logging
-import os  # os.path.relpath
+import os
 import shutil
+import logging
 
-from watchdog.events import FileSystemEventHandler  # <--
-
-# La classe 'MyHandler' serve per gestire gli eventi registrati
-# dalla libreria watchdog.
-# Estende la classe 'FileSystemEventHandler', controlla ogni
-# cambiamento senza distinzione
+from watchdog.events import FileSystemEventHandler
 
 
 class MyHandler(FileSystemEventHandler):
@@ -20,57 +15,70 @@ class MyHandler(FileSystemEventHandler):
     def __init__(self, src, dst, args):
         """Class constructor."""
         self.path = src
-        logging.info(f"Source Path : src={self.path}")
+        logging.debug("Source Path : src=%s", self.path)
         self.dst = dst
-        logging.info(f"Destination Path : dst={self.dst}")
+        logging.debug("Destination Path : dst=%s", self.dst)
         self.dryrun = args["dryrun"]
-        logging.info(f"Dryrun flag : args[\"dryrun\"]={self.dryrun}")
+        logging.debug("Dryrun flag : args[\"dryrun\"]=%s", self.dryrun)
         self.verbose = args["verbose"]
-        logging.info(f"Verbose flag : args[\"verbose\"]={self.verbose}")
-        logging.info(f"Init Flag : args[\"init\"]={args['init']}")
+        logging.debug("Verbose flag : args[\"verbose\"]=%s", self.verbose)
+        logging.debug("Init Flag : args[\"init\"]=%s", args['init'])
         if args["init"]:  # init flag attivo
             dirs, files = self.dir_walk(self.path, self.dst, [], [])
-            if self.verbose:
-                print("\nDIRS to be duplicated: ")
-            for current_dir in dirs:
-                test = os.path.isdir(current_dir)
-                if not test:
-                    if self.verbose:
-                        print("\t" + current_dir)
-                    os.mkdir(current_dir)
+            for destination_object_to_duplicate in dirs:
+                logging.info("Init directory process -- duplicating directory %s",
+                             destination_object_to_duplicate)
+                os.mkdir(destination_object_to_duplicate)
 
-            if self.verbose:
-                print("\nFILES to be duplicated: ")
-            for dst_file in files:
-                src = os.path.join(src, os.path.relpath(dst_file, dst))
-                if not os.path.isfile(dst_file):
-                    if self.verbose:
-                        print("\t" + dst_file)
-                    shutil.copy(src, dst_file)
+            for destination_object_to_duplicate in files:
+                logging.info("Init directory process -- duplicating file %s",
+                             destination_object_to_duplicate)
+                shutil.copy(os.path.join(src, os.path.relpath(destination_object_to_duplicate, dst)),
+                            destination_object_to_duplicate)
 
     @staticmethod
     def dir_walk(main, dst, dirs, files):
         """Method used to explore a directory in order to track file."""
+        logging.debug("Scan of directory %s", main)
         for dir_path, dir_names, file_names in os.walk(main):
             for current_dir in dir_names:
+                logging.debug("Found directory %s in %s", current_dir, main)
                 new_path = os.path.join(dst, current_dir)
                 if (new_path not in dirs) and current_dir != ".":
+                    logging.debug("Directory %s added to new discovered directories", new_path)
                     dirs.append(new_path)
+                else:
+                    logging.debug("Directory %s already exists on the filesystem, skipping",
+                                  new_path)
             for _file in file_names:
+                logging.debug("Found file %s in %s", _file, main)
                 rel_path = os.path.relpath(dir_path, main)
                 new_path = os.path.join(dst, rel_path)
-                if rel_path == ".":
-                    new_file = os.path.join(dst, _file)
+                new_file = os.path.join(new_path, _file)
+
+                if os.path.isfile(new_file):
+                    logging.debug("File %s already exixts on filesystem, skipping", new_file)
                 else:
-                    new_file = os.path.join(new_path, _file)
-                files.append(new_file)
+                    logging.debug("File %s added to new discovered files", new_file)
+                    files.append(new_file)
         return dirs, files
 
     def on_created(self, event):
-        print(event.src_path)
         rel_path = os.path.relpath(event.src_path, self.path)
         dst_obj = os.path.join(self.dst, rel_path)
-        if event.is_directory:
-            os.mkdir(dst_obj)
-        else:
-            shutil.copy(event.src_path, dst_obj)
+        try:
+            if event.is_directory:
+                logging.info("A creation event has been detected in %s for directory %s",
+                             self.path, event.src_path)
+                os.mkdir(dst_obj)
+                logging.info("The directory %s has been duplicated successfully to %s",
+                             event.src_path, dst_obj)
+            else:
+                logging.info("A creation event has been detected in %s for file %s",
+                             self.path, event.src_path)
+                shutil.copy(event.src_path, dst_obj)
+                logging.info("The file %s has been duplicated successfully to %s",
+                             event.src_path, dst_obj)
+        except Exception as error:
+            logging.error("The following error occurred while duplicating %s to %s : %s",
+                          event.src_path, dst_obj, str(error))
