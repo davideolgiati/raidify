@@ -82,7 +82,7 @@ class MyHandler(FileSystemEventHandler):
         dst_obj = os.path.join(self.dst, rel_path)
         try:
             if event.is_directory:
-                if os.path.isdir(dst_obj):
+                if not os.path.isdir(dst_obj):
                     logging.info(
                         "A creation event has been detected in %s "
                         "for directory %s",
@@ -93,7 +93,7 @@ class MyHandler(FileSystemEventHandler):
                         "successfully to %s",
                         event.src_path, dst_obj)
             else:
-                if os.path.isfile(dst_obj):
+                if not os.path.isfile(dst_obj):
                     logging.info(
                         "A creation event has been detected in %s "
                         "for file %s",
