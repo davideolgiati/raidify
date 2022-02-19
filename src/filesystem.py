@@ -26,15 +26,19 @@ class MyHandler(FileSystemEventHandler):
         if args["init"]:  # init flag attivo
             dirs, files = self.dir_walk(self.path, self.dst, [], [])
             for destination_object_to_duplicate in dirs:
-                logging.info("Init directory process -- duplicating directory %s",
-                             destination_object_to_duplicate)
+                logging.info(
+                    "Init directory process -- duplicating directory %s",
+                    destination_object_to_duplicate)
                 os.mkdir(destination_object_to_duplicate)
 
             for destination_object_to_duplicate in files:
                 logging.info("Init directory process -- duplicating file %s",
                              destination_object_to_duplicate)
                 shutil.copy(
-                    os.path.join(src, os.path.relpath(destination_object_to_duplicate, dst)),
+                    os.path.join(src,
+                                 os.path.relpath(
+                                     destination_object_to_duplicate,
+                                     dst)),
                     destination_object_to_duplicate
                 )
 
@@ -47,11 +51,15 @@ class MyHandler(FileSystemEventHandler):
                 logging.debug("Found directory %s in %s", current_dir, main)
                 new_path = os.path.join(dst, current_dir)
                 if (new_path not in dirs) and current_dir != ".":
-                    logging.debug("Directory %s added to new discovered directories", new_path)
+                    logging.debug(
+                        "Directory %s added to new discovered directories",
+                        new_path)
                     dirs.append(new_path)
                 else:
-                    logging.debug("Directory %s already exists on the filesystem, skipping",
-                                  new_path)
+                    logging.debug(
+                        "Directory %s already exists on the filesystem, "
+                        "skipping",
+                        new_path)
             for _file in file_names:
                 logging.debug("Found file %s in %s", _file, main)
                 rel_path = os.path.relpath(dir_path, main)
@@ -59,9 +67,13 @@ class MyHandler(FileSystemEventHandler):
                 new_file = os.path.join(new_path, _file)
 
                 if os.path.isfile(new_file):
-                    logging.debug("File %s already exixts on filesystem, skipping", new_file)
+                    logging.debug(
+                        "File %s already exixts on filesystem, skipping",
+                        new_file)
                 else:
-                    logging.debug("File %s added to new discovered files", new_file)
+                    logging.debug(
+                        "File %s added to new discovered files",
+                        new_file)
                     files.append(new_file)
         return dirs, files
 
@@ -71,21 +83,31 @@ class MyHandler(FileSystemEventHandler):
         try:
             if event.is_directory:
                 if os.path.isdir(dst_obj):
-                    logging.info("A creation event has been detected in %s for directory %s",
-                                 self.path, event.src_path)
+                    logging.info(
+                        "A creation event has been detected in %s "
+                        "for directory %s",
+                        self.path, event.src_path)
                     os.mkdir(dst_obj)
-                    logging.info("The directory %s has been duplicated successfully to %s",
-                                 event.src_path, dst_obj)
+                    logging.info(
+                        "The directory %s has been duplicated "
+                        "successfully to %s",
+                        event.src_path, dst_obj)
             else:
                 if os.path.isfile(dst_obj):
-                    logging.info("A creation event has been detected in %s for file %s",
-                                 self.path, event.src_path)
+                    logging.info(
+                        "A creation event has been detected in %s "
+                        "for file %s",
+                        self.path, event.src_path)
                     shutil.copy(event.src_path, dst_obj)
-                    logging.info("The file %s has been duplicated successfully to %s",
-                                 event.src_path, dst_obj)
+                    logging.info(
+                        "The file %s has been duplicated "
+                        "successfully to %s",
+                        event.src_path, dst_obj)
         except Exception as error:
-            logging.error("The following error occurred while duplicating %s to %s : %s",
-                          event.src_path, dst_obj, str(error))
+            logging.error(
+                "The following error occurred while duplicating %s to "
+                "%s : %s",
+                event.src_path, dst_obj, str(error))
 
     def on_deleted(self, event):
         rel_path = os.path.relpath(event.src_path, self.path)
@@ -93,21 +115,29 @@ class MyHandler(FileSystemEventHandler):
         try:
             if event.is_directory:
                 if os.path.isdir(dst_obj):
-                    logging.info("A deletion event has been detected in %s for directory %s",
-                                 self.path, event.src_path)
+                    logging.info(
+                        "A deletion event has been detected in %s for "
+                        "directory %s",
+                        self.path, event.src_path)
                     shutil.rmtree(dst_obj)
-                    logging.info("The directory %s has been deleted successfully",
-                                 dst_obj)
+                    logging.info(
+                        "The directory %s has been deleted "
+                        "successfully",
+                        dst_obj)
             else:
                 if os.path.isfile(dst_obj):
-                    logging.info("A deletion event has been detected in %s for file %s",
-                                 self.path, event.src_path)
+                    logging.info(
+                        "A deletion event has been detected in %s for "
+                        "file %s",
+                        self.path, event.src_path)
                     os.remove(dst_obj)
-                    logging.info("The file %s has been deleted successfully",
-                                 dst_obj)
+                    logging.info(
+                        "The file %s has been deleted successfully",
+                        dst_obj)
         except Exception as error:
-            logging.error("The following error occurred while deleting %s : %s",
-                          dst_obj, str(error))
+            logging.error(
+                "The following error occurred while deleting %s : %s",
+                dst_obj, str(error))
 
     def on_modified(self, event):
         pass
