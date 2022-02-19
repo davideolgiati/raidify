@@ -33,8 +33,10 @@ class MyHandler(FileSystemEventHandler):
             for destination_object_to_duplicate in files:
                 logging.info("Init directory process -- duplicating file %s",
                              destination_object_to_duplicate)
-                shutil.copy(os.path.join(src, os.path.relpath(destination_object_to_duplicate, dst)),
-                            destination_object_to_duplicate)
+                shutil.copy(
+                    os.path.join(src, os.path.relpath(destination_object_to_duplicate, dst)),
+                    destination_object_to_duplicate
+                )
 
     @staticmethod
     def dir_walk(main, dst, dirs, files):
@@ -68,17 +70,47 @@ class MyHandler(FileSystemEventHandler):
         dst_obj = os.path.join(self.dst, rel_path)
         try:
             if event.is_directory:
-                logging.info("A creation event has been detected in %s for directory %s",
-                             self.path, event.src_path)
-                os.mkdir(dst_obj)
-                logging.info("The directory %s has been duplicated successfully to %s",
-                             event.src_path, dst_obj)
+                if os.path.isdir(dst_obj):
+                    logging.info("A creation event has been detected in %s for directory %s",
+                                 self.path, event.src_path)
+                    os.mkdir(dst_obj)
+                    logging.info("The directory %s has been duplicated successfully to %s",
+                                 event.src_path, dst_obj)
             else:
-                logging.info("A creation event has been detected in %s for file %s",
-                             self.path, event.src_path)
-                shutil.copy(event.src_path, dst_obj)
-                logging.info("The file %s has been duplicated successfully to %s",
-                             event.src_path, dst_obj)
+                if os.path.isfile(dst_obj):
+                    logging.info("A creation event has been detected in %s for file %s",
+                                 self.path, event.src_path)
+                    shutil.copy(event.src_path, dst_obj)
+                    logging.info("The file %s has been duplicated successfully to %s",
+                                 event.src_path, dst_obj)
         except Exception as error:
             logging.error("The following error occurred while duplicating %s to %s : %s",
                           event.src_path, dst_obj, str(error))
+
+    def on_deleted(self, event):
+        rel_path = os.path.relpath(event.src_path, self.path)
+        dst_obj = os.path.join(self.dst, rel_path)
+        try:
+            if event.is_directory:
+                if os.path.isdir(dst_obj):
+                    logging.info("A deletion event has been detected in %s for directory %s",
+                                 self.path, event.src_path)
+                    shutil.rmtree(dst_obj)
+                    logging.info("The directory %s has been deleted successfully",
+                                 dst_obj)
+            else:
+                if os.path.isfile(dst_obj):
+                    logging.info("A deletion event has been detected in %s for file %s",
+                                 self.path, event.src_path)
+                    os.remove(dst_obj)
+                    logging.info("The file %s has been deleted successfully",
+                                 dst_obj)
+        except Exception as error:
+            logging.error("The following error occurred while deleting %s : %s",
+                          dst_obj, str(error))
+
+    def on_modified(self, event):
+        pass
+
+    def on_moved(self, event):
+        pass
