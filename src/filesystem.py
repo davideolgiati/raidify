@@ -8,7 +8,7 @@ from watchdog.events import FileSystemEventHandler
 
 class MyHandler(FileSystemEventHandler):
 
-    """Main filesystem watchdog class."""
+    """Main filesystem watchdog event handling class."""
 
     # nel costruttore salvo il valore di path, che rappresenta
     # la directory principale da osservare
@@ -143,4 +143,37 @@ class MyHandler(FileSystemEventHandler):
         pass
 
     def on_moved(self, event):
-        pass
+        rel_path_from = os.path.relpath(event.src_path, self.path)
+        dst_obj_from = os.path.join(self.dst, rel_path_from)
+        rel_path_to = os.path.relpath(event.dest_path, self.path)
+        dst_obj_to = os.path.join(self.dst, rel_path_to)
+        try:
+            if event.is_directory:
+                if os.path.isdir(dst_obj_from) and \
+                        not os.path.isdir(dst_obj_to):
+                    logging.info(
+                        "A move event has been detected in %s for "
+                        "directory %s",
+                        self.path, event.src_path)
+                    shutil.move(dst_obj_from, dst_obj_to,
+                                copy_function=shutil.copytree)
+                    logging.info(
+                        "The directory %s has been moved "
+                        "successfully to %s",
+                        dst_obj_from, dst_obj_to)
+            else:
+                if os.path.isfile(dst_obj_from) and \
+                        not os.path.isfile(dst_obj_to):
+                    logging.info(
+                        "A move event has been detected in %s for "
+                        "file %s",
+                        self.path, event.src_path)
+                    shutil.move(dst_obj_from, dst_obj_to)
+                    logging.info(
+                        "The file %s has been moved successfully "
+                        "to %s",
+                        dst_obj_from, dst_obj_to)
+        except Exception as error:
+            logging.error(
+                "The following error occurred while moving %s : %s",
+                dst_obj_from, str(error))
