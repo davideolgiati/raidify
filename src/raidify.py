@@ -2,12 +2,19 @@
 import argparse
 import logging
 import os.path
+import re
 import sys
 import time
 
 from watchdog.observers import Observer
 
 from filesystem import MyHandler
+
+
+def is_path_like(path_to_test):
+    """Function to check if a string is path-like using RE"""
+    return bool(re.search(r'^(/)?(\w)+((/)(\w)+)*$',
+                          path_to_test))
 
 
 def logo(source, destination):
@@ -20,7 +27,9 @@ def logo(source, destination):
         file = "src/banner.txt"
 
     with open(
-        os.path.join(os.path.abspath(os.curdir), file), "r", encoding="UTF-8"
+            os.path.join(os.path.abspath(os.curdir), file),
+            "r",
+            encoding="UTF-8"
     ) as banner_source:
         banner = banner_source.read()
 
@@ -59,13 +68,13 @@ def parse_flag(flags):
 
     parsed_args = parser.parse_args(args=flags, namespace=None)
 
-    if not os.path.isdir(parsed_args.src):
+    if not (is_path_like(parsed_args.src) and os.path.isdir(parsed_args.src)):
         parser.error(
             f"{parsed_args.src} is not recognized as a "
             f"valid directory in the filesystem"
         )
 
-    if not os.path.isdir(parsed_args.dst):
+    if not (is_path_like(parsed_args.dst) and os.path.isdir(parsed_args.dst)):
         parser.error(
             f"{parsed_args.dst} is not recognized as a "
             f"valid directory in the filesystem"
