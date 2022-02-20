@@ -92,8 +92,6 @@ class MainRaidifyModuleTest(TestCase):
         self.assertTrue(os.path.isdir(os.path.join(destination, "new_dir/")))
         self.assertTrue(os.path.isfile(os.path.join(destination, "new_dir/test.txt")))
         with open(
-            os.path.join(destination, "new_dir/test.txt"),
-            "r",
-            encoding="UTF-8"
+            os.path.join(destination, "new_dir/test.txt"), "r", encoding="UTF-8"
         ) as i_file:
             self.assertEqual(i_file.read(), "test di integrazione 2")

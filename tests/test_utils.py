@@ -1,5 +1,6 @@
 import tempfile
 
+
 def temp_dirs(func):
     """Decorator to generate temporary directories."""
 
