@@ -1,11 +1,23 @@
 # raidify
 
-[![Unit Testing](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml) [![CodeQL](https://github.com/davideolgiati/raidify/actions/workflows/code_ql.yaml/badge.svg)](https://github.com/davideolgiati/raidify/actions/workflows/code_ql.yaml)
+[![Unit Testing](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml) 
+[![CodeQL](https://github.com/davideolgiati/raidify/actions/workflows/code_ql.yaml/badge.svg)](https://github.com/davideolgiati/raidify/actions/workflows/code_ql.yaml)
 
 python3 script to keep 2 folders synced
 
-Simple script to keep two folder sincronized. Composed of two .py files, raidify.py in de main program, filesystem.py contains filsystem utilitys to track file changes.
+The project is composed by two python files, raidify.py and filesystem.py. raidify.py is the entrypoint for the 
+execution, filesystem.py is the underneath logic layer through which watchdog events are handled.
 
+###setup:
+
+```
+[davide@fedora raidify]$ pip install -r requirements.txt
+[davide@fedora raidify]$ python3 raidify.py /path/to/source /path/to/dest
+```
+To run this program, first install all the dependency in requirements.txt using pip. Then execute the script providing 
+as input the source directory and the destination directory
+
+###business logic:
 &nbsp;
 
 ![raidyfy simplified logic](images/raidify.drawio.png "Raidify simplified Logic")
