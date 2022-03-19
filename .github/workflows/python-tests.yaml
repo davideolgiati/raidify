@@ -1,11 +1,10 @@
-name: Unit Testing
+name: Code Quality
 
 on: push
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -22,13 +21,20 @@ jobs:
           pip install bandit
           pip install codecov
           pip install -r requirements.txt
-      - name: Lint
-        run: |
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
           flake8 src
           pylint src --fail-under=9
-      - name: Static Analysis
-        run: |
-          bandit src
-      - name: Coverage + Unit Testing
-        run: |
-          pytest
+  unit-test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - run: pytest
+  static-analisys:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - run: bandit src
