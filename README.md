@@ -8,7 +8,7 @@ python3 script to keep 2 folders synced
 The project is composed by two python files, raidify.py and filesystem.py. raidify.py is the entrypoint for the 
 execution, filesystem.py is the underneath logic layer through which watchdog events are handled.
 
-###setup:
+### setup:
 
 ```
 [davide@fedora raidify]$ pip install -r requirements.txt
@@ -17,7 +17,7 @@ execution, filesystem.py is the underneath logic layer through which watchdog ev
 To run this program, first install all the dependency in requirements.txt using pip. Then execute the script providing 
 as input the source directory and the destination directory
 
-###business logic:
+### business logic:
 &nbsp;
 
 ![raidyfy simplified logic](images/raidify.drawio.png "Raidify simplified Logic")
