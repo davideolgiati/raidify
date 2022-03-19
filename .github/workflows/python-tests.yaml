@@ -31,5 +31,4 @@ jobs:
           bandit src
       - name: Coverage + Unit Testing
         run: |
-          pytest --cov-report=xml
-          codecov
+          pytest
