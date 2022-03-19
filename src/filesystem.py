@@ -140,7 +140,33 @@ class MyHandler(FileSystemEventHandler):
                 dst_obj, str(error))
 
     def on_modified(self, event):
-        pass
+        rel_path = os.path.relpath(event.src_path, self.path)
+        dst_obj = os.path.join(self.dst, rel_path)
+        try:
+            if event.is_directory:
+                logging.info(
+                    "A modification event has been detected in %s for "
+                    "directory %s",
+                    self.path, event.src_path)
+                shutil.copytree(event.src_path, dst_obj)
+                logging.info(
+                    "The directory %s has been modified "
+                    "successfully",
+                    dst_obj)
+            else:
+                logging.info(
+                    "A modification event has been detected in %s "
+                    "for file %s",
+                    self.path, event.src_path)
+                shutil.copy(event.src_path, dst_obj)
+                logging.info(
+                    "The file %s has been updated "
+                    "successfully",
+                    dst_obj)
+        except Exception as error:
+            logging.error(
+                "The following error occurred while syncing modified object %s : %s",
+                dst_obj, str(error))
 
     def on_moved(self, event):
         rel_path_from = os.path.relpath(event.src_path, self.path)

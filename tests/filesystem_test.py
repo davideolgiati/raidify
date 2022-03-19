@@ -147,42 +147,42 @@ class FilesystemTest(TestCase):
         self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
         self.assertTrue(os.path.isfile(os.path.join(destination, "new_file2.txt")))
 
-    # @temp_dirs
-    # def test_modify_file(self, source, destination):
-    #     sys.argv = [source, destination, "--verbose", "--init"]
-    #     self.assertFalse(os.path.isdir(os.path.join(source, "new_file.txt")))
-    #     self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
-    #
-    #     with open(
-    #         os.path.join(source, "new_file.txt"), "w", encoding="UTF-8"
-    #     ) as new_file:
-    #         new_file.write("test integrazione 3")
-    #
-    #     path, handler = setup_var_from_args(sys.argv)
-    #
-    #     self.assertEqual(source, path)
-    #     self.assertEqual(source, handler.path)
-    #     self.assertEqual(destination, handler.dst)
-    #     self.assertFalse(handler.dryrun)
-    #     self.assertTrue(handler.verbose)
-    #
-    #     self.assertTrue(os.path.isfile(os.path.join(source, "new_file.txt")))
-    #     self.assertTrue(os.path.isfile(os.path.join(destination, "new_file.txt")))
-    #
-    #     observer = Observer()
-    #     observer.schedule(handler, path, recursive=True)
-    #     observer.start()
-    #
-    #     with open(
-    #         os.path.join(source, "new_file.txt"), "w", encoding="UTF-8"
-    #     ) as new_file:
-    #         new_file.write("test integrazione 4")
-    #     time.sleep(5)
-    #
-    #     observer.stop()
-    #     observer.join()
-    #
-    #     with open(
-    #             os.path.join(destination, "new_file.txt"), "r", encoding="UTF-8"
-    #     ) as new_file:
-    #         self.assertEqual(new_file.read(), "test integrazione 4")
+    @temp_dirs
+    def test_modify_file(self, source, destination):
+        sys.argv = [source, destination, "--verbose", "--init"]
+        self.assertFalse(os.path.isdir(os.path.join(source, "new_file.txt")))
+        self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
+
+        with open(
+            os.path.join(source, "new_file.txt"), "w", encoding="UTF-8"
+        ) as new_file:
+            new_file.write("test integrazione 3")
+
+        path, handler = setup_var_from_args(sys.argv)
+
+        self.assertEqual(source, path)
+        self.assertEqual(source, handler.path)
+        self.assertEqual(destination, handler.dst)
+        self.assertFalse(handler.dryrun)
+        self.assertTrue(handler.verbose)
+
+        self.assertTrue(os.path.isfile(os.path.join(source, "new_file.txt")))
+        self.assertTrue(os.path.isfile(os.path.join(destination, "new_file.txt")))
+
+        observer = Observer()
+        observer.schedule(handler, path, recursive=True)
+        observer.start()
+
+        with open(
+            os.path.join(source, "new_file.txt"), "w", encoding="UTF-8"
+        ) as new_file:
+            new_file.write("test integrazione 4")
+        time.sleep(5)
+
+        observer.stop()
+        observer.join()
+
+        with open(
+                os.path.join(destination, "new_file.txt"), "r", encoding="UTF-8"
+        ) as new_file:
+            self.assertEqual(new_file.read(), "test integrazione 4")
