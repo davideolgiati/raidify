@@ -14,6 +14,8 @@ class MyHandler(FileSystemEventHandler):
     # la directory principale da osservare
     def __init__(self, src, dst, args):
         """Class constructor."""
+        if args["verbose"]:
+            logging.basicConfig(level=logging.DEBUG)
         self.path = src
         logging.debug("Source Path : src=%s", self.path)
         self.dst = dst
@@ -165,7 +167,8 @@ class MyHandler(FileSystemEventHandler):
                     dst_obj)
         except Exception as error:
             logging.error(
-                "The following error occurred while syncing modified object %s : %s",
+                "The following error occurred while syncing "
+                "modified object %s : %s",
                 dst_obj, str(error))
 
     def on_moved(self, event):

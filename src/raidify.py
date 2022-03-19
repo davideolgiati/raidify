@@ -101,7 +101,7 @@ def setup_var_from_args(cli_args):
 
 if __name__ == "__main__":
     observer = Observer()
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     path, handler = setup_var_from_args(sys.argv[1:])
     observer.schedule(handler, path, recursive=True)
     observer.start()
