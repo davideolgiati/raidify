@@ -20,6 +20,7 @@ jobs:
           pip install flake8
           pip install pylint
           pip install bandit
+          pip install codecov
           pip install -r requirements.txt
       - name: Lint
         run: |
@@ -30,4 +31,5 @@ jobs:
           bandit src
       - name: Coverage + Unit Testing
         run: |
-          pytest
+          pytest --cov-report=xml
+          codecov
