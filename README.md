@@ -1,6 +1,7 @@
 # raidify
 
-[![Unit Testing](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml) 
+[![Unit Testing](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/davideolgiati/raidify/actions/workflows/python-tests.yaml)
+[![CodeFactor](https://www.codefactor.io/repository/github/davideolgiati/raidify/badge)](https://www.codefactor.io/repository/github/davideolgiati/raidify)
 
 python3 script to keep 2 folders synced
 
