@@ -13,7 +13,7 @@ from raidify import setup_var_from_args
 class DryrunTest(TestCase):
     @temp_dirs
     def test_create_sub_dir_dry_run(self, source, destination):
-        sys.argv = [source, destination, "--verbose"]
+        sys.argv = [source, destination, "--dryrun"]
         self.assertFalse(os.path.isdir(os.path.join(source, "new_dir/")))
         self.assertFalse(os.path.isdir(os.path.join(destination, "new_dir/")))
 
@@ -22,8 +22,8 @@ class DryrunTest(TestCase):
         self.assertEqual(source, path)
         self.assertEqual(source, handler.path)
         self.assertEqual(destination, handler.dst)
-        self.assertFalse(handler.dryrun)
-        self.assertTrue(handler.verbose)
+        self.assertTrue(handler.dryrun)
+        self.assertFalse(handler.verbose)
 
         observer = Observer()
         observer.schedule(handler, path, recursive=True)
@@ -81,38 +81,8 @@ class DryrunTest(TestCase):
         ) as new_file:
             new_file.write("test integrazione 3")
 
-        path, handler = setup_var_from_args(sys.argv)
-
-        self.assertEqual(source, path)
-        self.assertEqual(source, handler.path)
-        self.assertEqual(destination, handler.dst)
-        self.assertTrue(handler.dryrun)
-        self.assertTrue(handler.verbose)
-
-        self.assertTrue(os.path.isfile(os.path.join(source, "new_file.txt")))
-        self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
-
-        observer = Observer()
-        observer.schedule(handler, path, recursive=True)
-        observer.start()
-
-        os.remove(os.path.join(source, "new_file.txt"))
-        time.sleep(5)
-
-        observer.stop()
-        observer.join()
-
-        self.assertFalse(os.path.isfile(os.path.join(source, "new_file.txt")))
-        self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
-
-    @temp_dirs
-    def test_move_file_dry_run(self, source, destination):
-        sys.argv = [source, destination, "--dryrun", "--init"]
-        self.assertFalse(os.path.isdir(os.path.join(source, "new_file.txt")))
-        self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
-
         with open(
-                os.path.join(source, "new_file.txt"), "w", encoding="UTF-8"
+            os.path.join(destination, "new_file.txt"), "w", encoding="UTF-8"
         ) as new_file:
             new_file.write("test integrazione 3")
 
@@ -125,7 +95,47 @@ class DryrunTest(TestCase):
         self.assertFalse(handler.verbose)
 
         self.assertTrue(os.path.isfile(os.path.join(source, "new_file.txt")))
+        self.assertTrue(os.path.isfile(os.path.join(destination, "new_file.txt")))
+
+        observer = Observer()
+        observer.schedule(handler, path, recursive=True)
+        observer.start()
+
+        os.remove(os.path.join(source, "new_file.txt"))
+        time.sleep(5)
+
+        observer.stop()
+        observer.join()
+
+        self.assertFalse(os.path.isfile(os.path.join(source, "new_file.txt")))
+        self.assertTrue(os.path.isfile(os.path.join(destination, "new_file.txt")))
+
+    @temp_dirs
+    def test_move_file_dry_run(self, source, destination):
+        sys.argv = [source, destination, "--dryrun", "--init"]
+        self.assertFalse(os.path.isdir(os.path.join(source, "new_file.txt")))
         self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
+
+        with open(
+                os.path.join(source, "new_file.txt"), "w", encoding="UTF-8"
+        ) as new_file:
+            new_file.write("test integrazione 3")
+
+        with open(
+            os.path.join(destination, "new_file.txt"), "w", encoding="UTF-8"
+        ) as new_file:
+            new_file.write("test integrazione 3")
+
+        path, handler = setup_var_from_args(sys.argv)
+
+        self.assertEqual(source, path)
+        self.assertEqual(source, handler.path)
+        self.assertEqual(destination, handler.dst)
+        self.assertTrue(handler.dryrun)
+        self.assertFalse(handler.verbose)
+
+        self.assertTrue(os.path.isfile(os.path.join(source, "new_file.txt")))
+        self.assertTrue(os.path.isfile(os.path.join(destination, "new_file.txt")))
 
         observer = Observer()
         observer.schedule(handler, path, recursive=True)
@@ -153,6 +163,11 @@ class DryrunTest(TestCase):
         ) as new_file:
             new_file.write("test integrazione 3")
 
+        with open(
+            os.path.join(destination, "new_file.txt"), "w", encoding="UTF-8"
+        ) as new_file:
+            new_file.write("test integrazione 3")
+
         path, handler = setup_var_from_args(sys.argv)
 
         self.assertEqual(source, path)
@@ -162,7 +177,7 @@ class DryrunTest(TestCase):
         self.assertFalse(handler.verbose)
 
         self.assertTrue(os.path.isfile(os.path.join(source, "new_file.txt")))
-        self.assertFalse(os.path.isfile(os.path.join(destination, "new_file.txt")))
+        self.assertTrue(os.path.isfile(os.path.join(destination, "new_file.txt")))
 
         observer = Observer()
         observer.schedule(handler, path, recursive=True)

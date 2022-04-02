@@ -31,12 +31,12 @@ class MyHandler(FileSystemEventHandler):
                 logging.info(
                     "Init directory process -- duplicating directory %s",
                     destination_object_to_duplicate)
-                os.mkdir(destination_object_to_duplicate)
+                self.create_directory(destination_object_to_duplicate)
 
             for destination_object_to_duplicate in files:
                 logging.info("Init directory process -- duplicating file %s",
                              destination_object_to_duplicate)
-                shutil.copy(
+                self.copy_file(
                     os.path.join(src,
                                  os.path.relpath(
                                      destination_object_to_duplicate,
@@ -89,7 +89,7 @@ class MyHandler(FileSystemEventHandler):
                         "A creation event has been detected in %s "
                         "for directory %s",
                         self.path, event.src_path)
-                    os.mkdir(dst_obj)
+                    self.create_directory(dst_obj)
                     logging.info(
                         "The directory %s has been duplicated "
                         "successfully to %s",
@@ -121,7 +121,7 @@ class MyHandler(FileSystemEventHandler):
                         "A deletion event has been detected in %s for "
                         "directory %s",
                         self.path, event.src_path)
-                    shutil.rmtree(dst_obj)
+                    self.delete_path(dst_obj)
                     logging.info(
                         "The directory %s has been deleted "
                         "successfully",
@@ -132,7 +132,7 @@ class MyHandler(FileSystemEventHandler):
                         "A deletion event has been detected in %s for "
                         "file %s",
                         self.path, event.src_path)
-                    os.remove(dst_obj)
+                    self.delete_file(dst_obj)
                     logging.info(
                         "The file %s has been deleted successfully",
                         dst_obj)
@@ -185,8 +185,7 @@ class MyHandler(FileSystemEventHandler):
                         "A move event has been detected in %s for "
                         "directory %s",
                         self.path, event.src_path)
-                    shutil.move(dst_obj_from, dst_obj_to,
-                                copy_function=shutil.copytree)
+                    self.move_path(dst_obj_from, dst_obj_to)
                     logging.info(
                         "The directory %s has been moved "
                         "successfully to %s",
@@ -198,7 +197,7 @@ class MyHandler(FileSystemEventHandler):
                         "A move event has been detected in %s for "
                         "file %s",
                         self.path, event.src_path)
-                    shutil.move(dst_obj_from, dst_obj_to)
+                    self.move_file(dst_obj_from, dst_obj_to)
                     logging.info(
                         "The file %s has been moved successfully "
                         "to %s",
@@ -213,3 +212,28 @@ class MyHandler(FileSystemEventHandler):
             return
         shutil.copy(src, dst)
 
+    def delete_file(self, path):
+        if self.dryrun:
+            return
+        os.remove(path)
+
+    def move_file(self, src, dst):
+        if self.dryrun:
+            return
+        shutil.move(src, dst)
+
+    def create_directory(self, path):
+        if self.dryrun:
+            return
+        os.mkdir(path)
+
+    def delete_path(self, path):
+        if self.dryrun:
+            return
+        shutil.rmtree(path)
+
+    def move_path(self, src, dst):
+        if self.dryrun:
+            return
+        shutil.move(src, dst,
+                    copy_function=shutil.copytree)
