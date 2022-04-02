@@ -5,10 +5,10 @@ import sys
 import time
 from unittest import TestCase
 
-from test_utils import temp_dirs
+from tests.test_utils import temp_dirs
 from watchdog.observers import Observer
 
-from raidify import setup_var_from_args
+from raidify.utils import setup_var_from_args
 
 
 class FilesystemTest(TestCase):

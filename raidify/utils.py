@@ -1,12 +1,6 @@
-"""raidify.py is a python script to keep 2 folders synced."""
 import argparse
-import logging
 import os.path
 import re
-import sys
-import time
-
-from watchdog.observers import Observer
 
 from filesystem import MyHandler
 
@@ -19,12 +13,8 @@ def is_path_like(path_to_test):
 
 def logo(source, destination):
     """Function used to print the script banner (from file banner.txt)."""
-    if os.path.abspath(os.curdir).endswith("/src"):
-        file = "banner.txt"
-    elif os.path.abspath(os.curdir).endswith("/tests"):
-        file = "../src/banner.txt"
-    else:
-        file = "src/banner.txt"
+
+    file = "data/banner.txt"
 
     with open(
             os.path.join(os.path.abspath(os.curdir), file),
@@ -97,19 +87,3 @@ def setup_var_from_args(cli_args):
         },
     )
     return flags.src, _handler
-
-
-if __name__ == "__main__":
-    observer = Observer()
-    logging.basicConfig(level=logging.INFO)
-    path, handler = setup_var_from_args(sys.argv[1:])
-    observer.schedule(handler, path, recursive=True)
-    observer.start()
-
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-
-    observer.join()

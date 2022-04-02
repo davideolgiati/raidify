@@ -20,5 +20,5 @@ as input the source directory and the destination directory
 ### business logic:
 &nbsp;
 
-![raidyfy simplified logic](images/raidify.drawio.png "Raidify simplified Logic")
+![raidyfy simplified logic](data/images/raidify.drawio.png "Raidify simplified Logic")
 

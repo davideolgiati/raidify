@@ -1,9 +1,7 @@
 from unittest import TestCase
 
-from test_utils import temp_dirs
-
-from raidify import logo, parse_flag
-
+from raidify.utils import logo, parse_flag
+from tests.test_utils import temp_dirs
 
 class BannerTest(TestCase):
     @temp_dirs
@@ -11,7 +9,7 @@ class BannerTest(TestCase):
         # No flags, just directories
         output = parse_flag([source, destination, "--verbose"])
         banner = logo(output.src, output.dst)
-        with open("src/banner.txt", "r", encoding="UTF-8") as in_file:
+        with open("data/banner.txt", "r", encoding="UTF-8") as in_file:
             bnr = in_file.read()
             self.assertEqual(
                 banner,

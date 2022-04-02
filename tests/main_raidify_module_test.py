@@ -2,9 +2,9 @@ import os.path
 import sys
 from unittest import TestCase
 
-from test_utils import temp_dirs
+from tests.test_utils import temp_dirs
 
-from raidify import setup_var_from_args
+from raidify.utils import setup_var_from_args
 
 
 class MainRaidifyModuleTest(TestCase):
