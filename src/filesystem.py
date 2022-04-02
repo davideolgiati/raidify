@@ -100,7 +100,7 @@ class MyHandler(FileSystemEventHandler):
                         "A creation event has been detected in %s "
                         "for file %s",
                         self.path, event.src_path)
-                    shutil.copy(event.src_path, dst_obj)
+                    self.copy_file(event.src_path, dst_obj)
                     logging.info(
                         "The file %s has been duplicated "
                         "successfully to %s",
@@ -146,21 +146,22 @@ class MyHandler(FileSystemEventHandler):
         dst_obj = os.path.join(self.dst, rel_path)
         try:
             if event.is_directory:
-                logging.info(
-                    "A modification event has been detected in %s for "
-                    "directory %s",
-                    self.path, event.src_path)
-                shutil.copytree(event.src_path, dst_obj)
-                logging.info(
-                    "The directory %s has been modified "
-                    "successfully",
-                    dst_obj)
+                return
+                # logging.info(
+                #     "A modification event has been detected in %s for "
+                #     "directory %s",
+                #     self.path, event.src_path)
+                # shutil.copytree(event.src_path, dst_obj)
+                # logging.info(
+                #     "The directory %s has been modified "
+                #     "successfully",
+                #     dst_obj)
             else:
                 logging.info(
                     "A modification event has been detected in %s "
                     "for file %s",
                     self.path, event.src_path)
-                shutil.copy(event.src_path, dst_obj)
+                self.copy_file(event.src_path, dst_obj)
                 logging.info(
                     "The file %s has been updated "
                     "successfully",
@@ -206,3 +207,9 @@ class MyHandler(FileSystemEventHandler):
             logging.error(
                 "The following error occurred while moving %s : %s",
                 dst_obj_from, str(error))
+
+    def copy_file(self, src, dst):
+        if self.dryrun:
+            return
+        shutil.copy(src, dst)
+
